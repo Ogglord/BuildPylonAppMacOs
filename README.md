@@ -1,6 +1,8 @@
 # Build Pylon App (macOS)
 
-One-shot installer and builder for a [Pake](https://github.com/tw93/Pake)-based macOS app that wraps [Pylon](https://app.usepylon.com).
+Pylon is only a web app. It has no app for MacOs.
+
+This script uses [Pake](https://github.com/tw93/Pake) to build a macOS app for [Pylon](https://app.usepylon.com).
 
 ![Pylon app screenshot](Screenshot/pylon.png)
 
@@ -12,19 +14,13 @@ From **Terminal** on macOS, run:
 curl -fsSL https://raw.githubusercontent.com/Ogglord/BuildPylonAppMacOs/main/build.sh | bash
 ```
 
-### What this does
- **download the script and run it with bash.**
-
-
 ## What the script does
 
 1. Checks you’re on macOS.
 2. Installs [Homebrew](https://brew.sh) if missing.
 3. Installs Git and Node.js (LTS) via Homebrew.
 4. Installs [Pake](https://github.com/tw93/Pake) (pake-cli) globally.
-5. Uses the Pylon app icon: it’s in the repo (`PylonIcon.icns`) and is **downloaded automatically** when you run the one-liner. If the download fails, you can choose a custom icon path or continue without one.
-6. Prompts for output directory (default: Desktop).
-7. Builds the Pylon app with Pake and places the `.app` in your chosen folder.
+6. Builds the Pylon app and puts the installer onto your Desktop
 
 If macOS blocks the app (Gatekeeper), right-click the app → **Open** once.
 
