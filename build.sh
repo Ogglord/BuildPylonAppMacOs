@@ -99,6 +99,12 @@ ensure_icon() {
   fi
   rm -f "$ICON_PATH"
 
+  if [[ ! -t 0 ]]; then
+    warn "Icon not found; continuing without icon (no TTY for input)."
+    ICON_PATH=""
+    return
+  fi
+
   warn "Icon not found at: $ICON_PATH"
   echo "You have three options:"
   echo "  1) Place PylonIcon.icns in the current directory"
@@ -106,7 +112,7 @@ ensure_icon() {
   echo "  3) Continue WITHOUT an icon (uses default)"
   echo
 
-  read -r -p "Choose (1/2/3): " choice </dev/tty
+  read -r -p "Choose (1/2/3): " choice
   case "${choice:-}" in
     1)
       if [[ -f "$ICON_PATH" ]]; then
@@ -117,7 +123,7 @@ ensure_icon() {
       fi
       ;;
     2)
-      read -r -p "Enter path to .icns: " user_icon </dev/tty
+      read -r -p "Enter path to .icns: " user_icon
       if [[ -n "${user_icon:-}" && -f "$user_icon" ]]; then
         ICON_PATH="$user_icon"
         log "Using icon: $ICON_PATH"
@@ -139,8 +145,14 @@ ensure_icon() {
 
 choose_output_dir() {
   local default_out="$HOME/Desktop"
+  if [[ ! -t 0 ]]; then
+    OUT_DIR="$default_out"
+    mkdir -p "$OUT_DIR"
+    log "Output directory: $OUT_DIR"
+    return
+  fi
   echo
-  read -r -p "Output directory for the built app? [default: $default_out] " outdir </dev/tty
+  read -r -p "Output directory for the built app? [default: $default_out] " outdir
   OUT_DIR="${outdir:-$default_out}"
   mkdir -p "$OUT_DIR"
   log "Output directory: $OUT_DIR"
@@ -195,10 +207,9 @@ main() {
   log "Pake one-shot setup for: $APP_URL"
   echo "This will install Homebrew, Node.js, and Pake if missing, then build '$APP_NAME'."
   echo
-  read -r -p "Continue? [Y/n] " ok </dev/tty
-  if [[ "${ok:-Y}" =~ ^[Nn]$ ]]; then
-    echo "Aborted."
-    exit 0
+  if [[ -t 0 ]]; then
+    read -r -p "Continue? [Y/n] " ok
+    [[ "${ok:-Y}" =~ ^[Nn]$ ]] && { echo "Aborted."; exit 0; }
   fi
 
   install_homebrew
