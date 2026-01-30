@@ -106,7 +106,7 @@ ensure_icon() {
   echo "  3) Continue WITHOUT an icon (uses default)"
   echo
 
-  read -r -p "Choose (1/2/3): " choice
+  read -r -p "Choose (1/2/3): " choice </dev/tty
   case "${choice:-}" in
     1)
       if [[ -f "$ICON_PATH" ]]; then
@@ -117,7 +117,7 @@ ensure_icon() {
       fi
       ;;
     2)
-      read -r -p "Enter path to .icns: " user_icon
+      read -r -p "Enter path to .icns: " user_icon </dev/tty
       if [[ -n "${user_icon:-}" && -f "$user_icon" ]]; then
         ICON_PATH="$user_icon"
         log "Using icon: $ICON_PATH"
@@ -140,7 +140,7 @@ ensure_icon() {
 choose_output_dir() {
   local default_out="$HOME/Desktop"
   echo
-  read -r -p "Output directory for the built app? [default: $default_out] " outdir
+  read -r -p "Output directory for the built app? [default: $default_out] " outdir </dev/tty
   OUT_DIR="${outdir:-$default_out}"
   mkdir -p "$OUT_DIR"
   log "Output directory: $OUT_DIR"
@@ -195,7 +195,7 @@ main() {
   log "Pake one-shot setup for: $APP_URL"
   echo "This will install Homebrew, Node.js, and Pake if missing, then build '$APP_NAME'."
   echo
-  read -r -p "Continue? [Y/n] " ok
+  read -r -p "Continue? [Y/n] " ok </dev/tty
   if [[ "${ok:-Y}" =~ ^[Nn]$ ]]; then
     echo "Aborted."
     exit 0
