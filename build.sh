@@ -138,10 +138,22 @@ build_app() {
   rm -rf "$dest"
   mv "$built_app" "$dest"
 
-  log "✅ App created:"
-  echo "  $dest"
+  # Rainbow ANSI: red, yellow, green, cyan, blue, magenta
+  local R="\033[31m" Y="\033[33m" G="\033[32m" C="\033[36m" B="\033[34m" M="\033[35m" Z="\033[0m"
   echo
-  echo "Tip: If macOS blocks it (Gatekeeper), right-click the app → Open."
+  echo -e "${R}  _____ _   _  _____ _____ _____ _____ ${Z}"
+  echo -e "${Y} / ____| | | |/ ____/ ____|_   _/ ____|${Z}"
+  echo -e "${G}| (___ | | | | |   | |     | || |     ${Z}"
+  echo -e "${C} \\___ \\| | | | |   | |     | || |     ${Z}"
+  echo -e "${B} ____) | |_| | |___| |____ _| || |____ ${Z}"
+  echo -e "${M}|_____/ \\___/ \\_____\\_____|_____\\_____|${Z}"
+  echo
+  echo "  App created: $dest"
+  echo
+  echo "  Drag \"Pylon.app\" to the Applications folder in Finder."
+  echo
+  echo "  (If macOS blocks it (Gatekeeper), right-click the app → Open.)"
+  echo
 }
 
 main() {
