@@ -89,7 +89,7 @@ install_pake() {
 }
 
 choose_output_dir() {
-  local default_out="$HOME/Desktop"
+  local default_out="$(pwd)"
   if [[ ! -t 0 ]]; then
     OUT_DIR="$default_out"
     mkdir -p "$OUT_DIR"
@@ -152,7 +152,7 @@ main() {
   echo "  • Install Homebrew (if not installed)"
   echo "  • Install Git and Node.js via Homebrew (if missing)"
   echo "  • Install Pake (pake-cli) globally via npm (if missing)"
-  echo "  • Ask for an output directory (default: Desktop)"
+  echo "  • Ask for an output directory (default: current directory)"
   echo "  • Build the '$APP_NAME' app and place the .app in that directory"
   echo
   if [[ -t 0 ]]; then
