@@ -6,6 +6,7 @@ set -euo pipefail
 APP_URL="https://app.usepylon.com"
 APP_NAME="Pylon"
 ICON_PATH="./PylonIcon.icns"
+ICON_URL="https://raw.githubusercontent.com/Ogglord/BuildPylonAppMacOs/main/PylonIcon.icns"
 
 log() { printf "\n\033[1m%s\033[0m\n" "$*"; }
 warn() { printf "\n\033[33m%s\033[0m\n" "$*"; }
@@ -20,7 +21,19 @@ require_macos() {
   fi
 }
 
+load_brew_path() {
+  # Put Homebrew on PATH for this session if it's installed but not in PATH (e.g. new terminal)
+  if [[ -x /opt/homebrew/bin/brew ]]; then
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+  elif [[ -x /usr/local/bin/brew ]]; then
+    eval "$(/usr/local/bin/brew shellenv)"
+  fi
+}
+
 install_homebrew() {
+  # Load brew into PATH first so we don't re-run just because this shell hasn't sourced profile
+  load_brew_path
+
   if need_cmd brew; then
     log "Homebrew already installed."
     return
@@ -29,12 +42,7 @@ install_homebrew() {
   log "Installing Homebrew..."
   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
-  # Add brew to PATH for this session (works for Apple Silicon + Intel)
-  if [[ -x /opt/homebrew/bin/brew ]]; then
-    eval "$(/opt/homebrew/bin/brew shellenv)"
-  elif [[ -x /usr/local/bin/brew ]]; then
-    eval "$(/usr/local/bin/brew shellenv)"
-  fi
+  load_brew_path
 
   if ! need_cmd brew; then
     err "Homebrew installation completed but brew isn't on PATH. Open a new terminal and rerun."
@@ -83,6 +91,13 @@ ensure_icon() {
     log "Found icon: $ICON_PATH"
     return
   fi
+
+  log "Downloading icon from repo..."
+  if curl -fsSL "$ICON_URL" -o "$ICON_PATH" 2>/dev/null && [[ -f "$ICON_PATH" ]]; then
+    log "Using icon: $ICON_PATH"
+    return
+  fi
+  rm -f "$ICON_PATH"
 
   warn "Icon not found at: $ICON_PATH"
   echo "You have three options:"
