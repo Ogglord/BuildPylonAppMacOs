@@ -5,7 +5,7 @@ set -euo pipefail
 
 APP_URL="https://app.usepylon.com"
 APP_NAME="Pylon"
-ICON_PATH="./PylonIcon.icns"
+# Pake accepts a URL for --icon (e.g. https://cdn.tw93.fun/pake/weekly.icns)
 ICON_URL="https://raw.githubusercontent.com/Ogglord/BuildPylonAppMacOs/main/PylonIcon.icns"
 
 log() { printf "\n\033[1m%s\033[0m\n" "$*"; }
@@ -86,63 +86,6 @@ install_pake() {
   log "Pake installed: $(pake --version 2>/dev/null || echo 'version unknown')"
 }
 
-ensure_icon() {
-  if [[ -f "$ICON_PATH" ]]; then
-    log "Found icon: $ICON_PATH"
-    return
-  fi
-
-  log "Downloading icon from repo..."
-  if curl -fsSL "$ICON_URL" -o "$ICON_PATH" 2>/dev/null && [[ -f "$ICON_PATH" ]]; then
-    log "Using icon: $ICON_PATH"
-    return
-  fi
-  rm -f "$ICON_PATH"
-
-  if [[ ! -t 0 ]]; then
-    warn "Icon not found; continuing without icon (no TTY for input)."
-    ICON_PATH=""
-    return
-  fi
-
-  warn "Icon not found at: $ICON_PATH"
-  echo "You have three options:"
-  echo "  1) Place PylonIcon.icns in the current directory"
-  echo "  2) Enter a different path to an .icns file"
-  echo "  3) Continue WITHOUT an icon (uses default)"
-  echo
-
-  read -r -p "Choose (1/2/3): " choice
-  case "${choice:-}" in
-    1)
-      if [[ -f "$ICON_PATH" ]]; then
-        log "Great — icon found now."
-      else
-        err "Still not found. Put it here: $(pwd)/PylonIcon.icns and rerun, or choose option 2/3."
-        exit 1
-      fi
-      ;;
-    2)
-      read -r -p "Enter path to .icns: " user_icon
-      if [[ -n "${user_icon:-}" && -f "$user_icon" ]]; then
-        ICON_PATH="$user_icon"
-        log "Using icon: $ICON_PATH"
-      else
-        err "That file doesn't exist."
-        exit 1
-      fi
-      ;;
-    3)
-      ICON_PATH=""
-      warn "Continuing without a custom icon."
-      ;;
-    *)
-      err "Invalid choice."
-      exit 1
-      ;;
-  esac
-}
-
 choose_output_dir() {
   local default_out="$HOME/Desktop"
   if [[ ! -t 0 ]]; then
@@ -162,9 +105,7 @@ build_app() {
   log "Building app with Pake..."
 
   local cmd=(pake "$APP_URL" --name "$APP_NAME")
-  if [[ -n "${ICON_PATH:-}" ]]; then
-    cmd+=(--icon "$ICON_PATH")
-  fi
+  cmd+=(--icon "$ICON_URL")
 
   echo
   echo "Running:"
@@ -215,7 +156,6 @@ main() {
   install_homebrew
   install_prereqs
   install_pake
-  ensure_icon
   choose_output_dir
   build_app
 }
