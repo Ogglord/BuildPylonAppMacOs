@@ -8,10 +8,10 @@ This script uses [Pake](https://github.com/tw93/Pake) to build a macOS app for [
 
 ## Quick start (one-liner)
 
-From **Terminal** on macOS, run:
+From **Terminal** on macOS, run (same style as [Homebrew](https://brew.sh)—keeps your terminal for prompts and sudo):
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/Ogglord/BuildPylonAppMacOs/main/build.sh | bash
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Ogglord/BuildPylonAppMacOs/main/build.sh)"
 ```
 
 ## What the script does
@@ -26,7 +26,7 @@ If macOS blocks the app (Gatekeeper), right-click the app → **Open** once.
 
 ### Security note
 
-Piping from the internet into `bash` runs whatever that URL serves. Only use this one-liner if you trust the source (this repo). To inspect first, download without running:
+Running this one-liner executes whatever that URL serves. Only use it if you trust the source (this repo). To inspect first, download without running:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/Ogglord/BuildPylonAppMacOs/main/build.sh -o build.sh

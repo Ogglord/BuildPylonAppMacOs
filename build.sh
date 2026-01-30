@@ -2,6 +2,8 @@
 set -euo pipefail
 
 # One-shot installer + builder for a Pake macOS app
+# Homebrew is run non-interactively (cannot prompt for password in pipe / -c context)
+export NONINTERACTIVE=1
 
 APP_URL="https://app.usepylon.com"
 APP_NAME="Pylon"
@@ -146,12 +148,20 @@ main() {
   require_macos
 
   log "Pake one-shot setup for: $APP_URL"
-  echo "This will install Homebrew, Node.js, and Pake if missing, then build '$APP_NAME'."
+  echo "This script will:"
+  echo "  • Install Homebrew (if not installed)"
+  echo "  • Install Git and Node.js via Homebrew (if missing)"
+  echo "  • Install Pake (pake-cli) globally via npm (if missing)"
+  echo "  • Ask for an output directory (default: Desktop)"
+  echo "  • Build the '$APP_NAME' app and place the .app in that directory"
   echo
   if [[ -t 0 ]]; then
-    read -r -p "Continue? [Y/n] " ok
-    [[ "${ok:-Y}" =~ ^[Nn]$ ]] && { echo "Aborted."; exit 0; }
+    read -r -p "Press Enter to continue, or any other key + Enter to abort: " confirm
+    [[ -n "${confirm:-}" ]] && { echo "Aborted."; exit 0; }
   fi
+
+  log "Checking sudo (you may be prompted for your password once)..."
+  sudo -v
 
   install_homebrew
   install_prereqs
