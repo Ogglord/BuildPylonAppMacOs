@@ -115,40 +115,19 @@ build_app() {
   echo
   echo
 
-  # Build in a temp dir, then move the resulting .app to OUT_DIR
-  local tmpdir
-  tmpdir="$(mktemp -d)"
-  trap 'rm -rf "$tmpdir"' EXIT
-
-  pushd "$tmpdir" >/dev/null
+  pushd "$OUT_DIR" >/dev/null
   "${cmd[@]}"
   popd >/dev/null
 
-  # Find the generated .app
-  local built_app
-  built_app="$(find "$tmpdir" -maxdepth 3 -type d -name "*.app" -print -quit || true)"
+  show_success_banner "$OUT_DIR"
+}
 
-  if [[ -z "${built_app:-}" ]]; then
-    err "Build finished but no .app was found. Pake output may differ by version."
-    err "Check the logs above for the output path."
-    exit 1
-  fi
 
-  local dest="$OUT_DIR/$(basename "$built_app")"
-  rm -rf "$dest"
-  mv "$built_app" "$dest"
-
-  # Rainbow ANSI: red, yellow, green, cyan, blue, magenta
-  local R="\033[31m" Y="\033[33m" G="\033[32m" C="\033[36m" B="\033[34m" M="\033[35m" Z="\033[0m"
+show_success_banner() {
+  local out_dir="${1:-$(pwd)}"
+  local G="\033[32m" Z="\033[0m"
   echo
-  echo -e "${R}  _____ _   _  _____ _____ _____ _____ ${Z}"
-  echo -e "${Y} / ____| | | |/ ____/ ____|_   _/ ____|${Z}"
-  echo -e "${G}| (___ | | | | |   | |     | || |     ${Z}"
-  echo -e "${C} \\___ \\| | | | |   | |     | || |     ${Z}"
-  echo -e "${B} ____) | |_| | |___| |____ _| || |____ ${Z}"
-  echo -e "${M}|_____/ \\___/ \\_____\\_____|_____\\_____|${Z}"
-  echo
-  echo "  App created: $dest"
+  echo "  App created in: $out_dir"
   echo
   echo "  Drag \"Pylon.app\" to the Applications folder in Finder."
   echo
@@ -158,6 +137,11 @@ build_app() {
 
 main() {
   require_macos
+
+  if [[ "${1:-}" == "--dry-run" ]]; then
+    show_success_banner "$(pwd)"
+    exit 0
+  fi
 
   log "Pake one-shot setup for: $APP_URL"
   echo "This script will:"

@@ -33,3 +33,5 @@ curl -fsSL https://raw.githubusercontent.com/Ogglord/BuildPylonAppMacOs/main/bui
 cat build.sh   # review, then:
 bash build.sh
 ```
+
+To preview only the success message (no install or build): `bash build.sh --dry-run`
